@@ -1,0 +1,8 @@
+{
+  "name": "pp_coursework",
+  "version": "0.0.1",
+  "description": "coursework for pp module",
+  "dependencies": {
+    "express": "^4.16.2"
+  }
+}

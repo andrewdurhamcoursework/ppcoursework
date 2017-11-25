@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<head>
+	<title>Login - Event Searcher Admin Portal</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script>
+		if (document.cookie != "")
+			window.location = "/events2017/admin";
+
+		function login() {
+			uname = $("#uname").val();
+			pword = $("#pword").val();
+
+			$.ajax({
+				type: "POST",
+				url:'/events2017/auth',
+				data: { "name" : uname , "password" : pword },
+				dataType: "json",
+				success: function (data) {
+					if (data.key == undefined)
+						alert("Incorrect login details.  Please try again.");
+					else {
+						document.cookie = "auth_key=" + data.key;
+						location.reload();
+					}
+				},
+				error: function(error) {
+					alert("an error occured\n" + JSON.stringify(error));
+				}
+			});
+		}
+
+		function checkKey(e) {
+			if (e.keyCode == 13) {
+				e.preventDefault();
+				login();
+			}
+			// else echo(e.keyCode);
+		}
+
+	</script>
+</head>
+<body>
+	<div class="container-fluid" style="margin-top:5px;">
+			<h2 style="text-align:center;">Event Searcher <small class="text-muted">2017</small></h2>
+			<h3 style="text-align:center;color:grey;">Admin Portal</h3>
+			
+	</div>
+	<div class="container-fluid">
+		<form>
+			<div class="form-row justify-content-center">
+				<div>
+					<div class="input-group" style="margin-top:3px;">
+						<span class="input-group-addon">username</span>
+						<input class="form-control" id="uname" type="text" aria-label="username" placeholder="username..."/>						
+					</div>
+				</div>
+			</div>
+			<div class="form-row justify-content-center">
+				<div>
+					<div class="input-group" style="margin-top:3px;">
+						<span class="input-group-addon">password</span>
+						<input class="form-control" id="pword" type="password" aria-label="password" placeholder="password..."/>
+					</div>
+				</div>
+			</div>
+			<div class="form-row justify-content-center">
+				<div>
+					<button class="btn btn-primary" type="button" text="refresh" style="margin-top:3px;" onclick="login()">login</button>
+				</div>
+			</div>
+		</form>	
+	</div>
+
+	<script>
+			$("input").keypress(function(e) {
+				checkKey(e);
+			});
+	</script>
+
+
+</body>

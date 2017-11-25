@@ -1,0 +1,279 @@
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="WP:%20Web%20Programming%20Assignment_files/main.css">
+<title>WP: Web Programming Assignment</title>
+</head>
+<body>
+<p>
+<a href="http://www.dur.ac.uk/">Durham</a> / <a href="http://www.dur.ac.uk/computer.science/">Computer Science</a> / <a href="http://www.dur.ac.uk/s.p.bradley">s.p.bradley</a>
+ / <a href="http://www.dur.ac.uk/s.p.bradley/teaching">teaching</a>
+ / <a href="http://www.dur.ac.uk/s.p.bradley/teaching/WP">WP</a>
+ / assignment2017
+</p>
+<center><h1>WP: Web Programming Assignment</h1></center>
+
+
+
+<h2>Dates and weightings</h2>
+<ul>
+  <li>This assignment contributes 25% to the overall mark for the module, and 50% of the coursework mark for the module.</li>
+  <li>It should be submitted through duo by 14.00 on Wednesday 13th 
+December 2017. Marks should be returned to you by 15th January 2018.</li>
+</ul>
+
+
+
+<h2>Scenario: Events</h2>
+
+<ul>
+  <li>People attend events at venues at certain times. You need to write
+ a web app to allow a list of events to be searched and updated</li>
+  <li>Provide a nodejs web service and a single page web app to access it</li>
+  <li>A separate service provides authentication (part of a microservices architecture)</li>
+  <li>Integrate an external web service to provide more event data</li>
+</ul>
+    
+<div><img src="WP:%20Web%20Programming%20Assignment_files/schematic.svg" width="75%"></div>
+
+
+
+<h2>Tasks</h2>
+<ul>
+<li>You need to demonstrate your knowledge and skills under the following
+headings.</li>
+<li>Complete them one at a time, in whichever order you prefer.</li>
+<li>Credit will be given for working code that meets some or all of the requirements listed below.</li>
+</ul>
+
+
+<h2>Locally hosted nodejs web service for events (30%)</h2>
+<ul>
+  <li>Develop a nodejs web REST service that can run on the local machine</li>
+  <li>The base URL for this web-service should be <pre>http://127.0.0.1:8090/events2017</pre> </li>
+  <li>It is important that you get this right as marking the web service
+ will be automated; you will lose marks if it is not in the correct 
+place</li>
+  <li>I will provide some simple tests for the web service</li>
+  <li>In the following requirements this URL will be referred to as BASE</li>
+  <li>All responses should be in JSON format and labelled as content-type <pre>application/json</pre>
+</li>
+  <li>Initially the auth_token (when required) should be "concertina", this will be expanded upon later on</li>
+  <li>Storage of events can be via flat files or a database, your choice</li>
+</ul>
+
+
+<h2>Events API definition</h2>
+
+<pre>GET BASE/venues</pre>
+<ul>
+  <li>List all the venue details</li>
+  <li>No parameters</li>
+  <li>Example response. Your response must follow this structure exactly, but with your data in it
+  <pre>    {
+    "venues":{
+    "v_1":{
+    "name":"Grinton Lodge Youth Hostel",
+    "postcode":"DL11 6HS",
+    "town":"Richmond",
+    "url":"http://www.yha.org.uk/hostel/grinton-lodge",
+    "icon":"http://www.yha.org.uk/sites/all/themes/yha/images/logos/yha_header_logo.png"
+    },
+    "v_2":{
+    "name":"Sage Gateshead",
+    "postcode":"NE8 2JR",
+    "town":"Gateshead",
+    "url":"http://www.sagegateshead.com/",
+    "icon":"http://www.sagegateshead.com/files/images/pageimage/1683.7123dea7/630x397.fitandcrop.jpg"
+    }
+    }
+    }
+  </pre>
+  </li>
+</ul>
+
+
+<pre>GET BASE/events/search</pre>
+<ul>
+  <li>Parameter <span style="font-family: courier">search</span> url-encoded string to be used to search event title (optional)</li>
+  <li>Parameter <span style="font-family: courier">date</span> url-encoded string representing the date to search for (optional)</li>
+  <li>Example response
+  <pre>    {
+    "events":[
+    {
+    "event_id":"e_1",
+    "title":"Swaledale Squeeze 2018",
+    "blurb":"The biggest and best concertina weekend in the world. Held each May in Grinton Lodge YHA, North Yorkshire",
+    "date":"2018-05-21T16:00:00Z",
+    "url":"http://www.swaledalesqueeze.org.uk",
+    "venue":{
+    "name":"Grinton Lodge Youth Hostel",
+    "postcode":"DL11 6HS",
+    "town":"Richmond",
+    "url":"http://www.yha.org.uk/hostel/grinton-lodge",
+    "icon":"http://www.yha.org.uk/sites/all/themes/yha/images/logos/yha_header_logo.png",
+    "venue_id":"v_1"
+    }
+    }
+    ]
+    }
+  </pre>
+</li>
+</ul>
+
+
+
+<pre>GET BASE/events/get/:event_id</pre>
+<ul>
+  <li>Parameter <span style="font-family: courier">event_id</span> in URL (required)</li>
+  <li>Single event object returned, in same format as elements in search result list</li>
+  <li>Example response (if <span style="font-family: courier">event_id</span> not defined or incorrect)
+  <pre>    {
+    "error": "no such event"
+    }
+  </pre>
+  </li>
+
+</ul>
+
+
+
+<pre>POST BASE/venues/add</pre>
+<ul>
+  <li>Parameter <span style="font-family: courier">auth_token</span> (required)</li>
+  <li>Parameter <span style="font-family: courier">name</span> text value (required)</li>
+  <li>Parameter <span style="font-family: courier">postcode</span> text value (optional)</li>
+  <li>Parameter <span style="font-family: courier">town</span> text value (optional)</li>
+  <li>Parameter <span style="font-family: courier">url</span> text value (optional)</li>
+  <li>Parameter <span style="font-family: courier">icon</span> text value of url (optional)</li>
+</ul>
+
+
+<ul>
+  <li>Example response (if <span style="font-family: courier">auth_token</span> not defined or incorrect)
+  <pre>    {
+    "error": "not authorised, wrong token"
+    }
+  </pre>
+  </li>
+  <li>Similar error response if note all required parameters are present</li>
+  <li>Response code of 400 should be set in case of error</li>
+</ul>
+
+
+
+<pre>POST BASE/events/add</pre>
+<ul>
+  <li>Parameter <span style="font-family: courier">auth_token</span> (required)</li>
+  <li>Parameter <span style="font-family: courier">event_id</span> text value (required)</li>
+  <li>Parameter <span style="font-family: courier">title</span> text value (required)</li>
+  <li>Parameter <span style="font-family: courier">venue_id</span> text value (required)</li>
+  <li>Parameter <span style="font-family: courier">date</span> must accept ISO8601 (required)</li>
+  <li>Parameter <span style="font-family: courier">url</span> text value of url (optional)</li>
+  <li>Parameter <span style="font-family: courier">blurb</span> text value (optional)</li>
+</ul>
+
+
+
+
+<h2>Single page HTML web app to access events  (10%)</h2>
+
+<ul>
+  <li>Should be located at <span style="font-family: courier">BASE/index.html</span>
+</li>
+  <li>Initially a search form is provided, allowing user to choose keywords and/or dates</li>
+  <li>When search results are produced, they should be listed under the search box with title, date and venue name</li>
+  <li>When a search result is clicked, full details of the event and venue should be displayed</li>
+  <li>All results should be accessed via the above web service with AJAX</li>
+  <li>Response from service should be converted to HTML and rendered into the page</li>
+</ul>
+
+
+<h2>Authentication (10%)</h2>
+To be used for admin
+<ul>
+  <li>Design your own authentication web service in nodejs</li>
+  <li>Provide a POST method which takes username, password and IP 
+address issues an auth_token for that IP address which lasts for two 
+hours</li>
+  <li>Provide a GET method which takes an auth_token and and IP address and returns whether or not the token is valid</li>
+  <li>The auth_token "concertina" should be valid for all times for IP addresses 129.234.xxx.yyy</li>
+</ul>
+
+
+
+
+<h2>Single page HTML web app to administer events (10%)</h2>
+<ul>
+  <li>Should be located at <span style="font-family: courier">BASE/admin.html</span>
+</li>
+  <li>List and add venues</li>
+  <li>Add events to a selected venue</li>
+  <li>If auth_token is not defined then forward to a login page</li>
+  <li>Save auth_token as cookie after login</li>
+</ul>
+
+
+
+<h2>Responsive design (10%)</h2>
+<ul>
+<li>Ensure that your app page and admin page are accessible and 
+responsive on mobile devices: use a collapsing menu bar for access to 
+event search or admin page</li>
+<li>Use a front end framework to mark up your code, e.g. <a href="http://getbootstrap.com/">bootstrap</a>, <a href="http://semantic-ui.com/">semantic-ui</a>
+</li>
+<li>Use a grid layout for your app page</li>
+</ul>
+
+
+
+<h2>Use an events web API (10%)</h2>
+
+<ul>
+  <li>Use an existing events web service such as <a href="http://api.eventful.com/docs">http://api.eventful.com/docs</a>
+</li>
+  <li>Could use a web service directory such as <a href="https://www.programmableweb.com/">https://www.programmableweb.com/</a>
+</li>
+  <li>Combine your local events with events recovered from the remote web service</li>
+  <li>Choose a particular focus for your events (e.g. concertinas) and 
+try to make sure that you request only events associated with that</li>
+  <li>Only include events from the UK</li>
+</ul>
+
+
+<h2>Cloud deployment (10%)</h2>
+<ul>
+  <li>Deploy your app and the associated services on a free cloud platform e.g. Red Hat OpenShift, IBM Bluemix</li>
+  <li>Include a link to your app</li>
+</ul>
+
+
+<h2>Video Presentation (10%)</h2>
+<ul>
+  <li>Submit a 2 minute (max) video demonstrating your software</li>
+  <li>Include demonstration of how to start the program</li>
+  <li>All functionality apart from web service (computer-marked) will be assessed by what is demonstrated in the video</li>
+  <li>If it is not demonstrated in the video, you will not get a mark for it</li>
+  <li>Quality of video presentation will be marked separately from functionality</li>
+  <li>Lose 10% of marks for every 10 seconds over 2 minutes</li>
+</ul>
+
+
+You need to submit all of your source code and a link to the working 
+application. Throughout a portion of the marks will be awarded for good 
+design and coding practice. All code will be analysed for similarity by a
+ plagiarism detection tool. It is appropriate to use and submit 
+libraries as long as these are identified as such in the source code. 
+
+<hr>
+<p>
+<a href="http://www.dur.ac.uk/">Durham</a> / <a href="http://www.dur.ac.uk/computer.science/">Computer Science</a> / <a href="http://www.dur.ac.uk/s.p.bradley">s.p.bradley</a>
+ / <a href="http://www.dur.ac.uk/s.p.bradley/teaching">teaching</a>
+ / <a href="http://www.dur.ac.uk/s.p.bradley/teaching/WP">WP</a>
+ / assignment2017
+</p>
+<address>
+Steven Bradley
+2017-10-17</address>
+
+
+</body></html>

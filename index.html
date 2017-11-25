@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Event Searcher</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+		<script>		
+		$(window).on("load", function() {
+			getEvents();
+		});
+
+		var events = null;
+		var expanded = null;
+
+		function getEvents() {
+			var search = $("#searchBar").val();
+			var date = $("#dateFilter").val();
+
+			$.getJSON("/events2017/events/search", {search: search, date: date}, function(data) {
+				$("#events").children().remove();
+				events = data.events;
+				$.each(events, function(key, value) {
+					var date = new Date(this.date);
+					var days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+					var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+					$("#events").append('<div id=' + key + ' class="list-group-item list-group-item-action" onclick="expand(\'' + key + '\')"><h4><b>' + this.title + "</b><small> - " + days[date.getDay()] + " " + date.getDate() + " " + months[date.getMonth()]  + "</small></h4><p>" + this.blurb + "</p></div>");
+				});
+			});
+		}
+		
+		function expand(id) {
+			if (expanded != null && expanded == id) {
+				$("#expandedContent").slideUp();
+				expanded = null;
+				return;
+			}
+
+			data = events[id];
+			$("#expandedContent").remove();
+			$("#" + id).after("<div id='expandedContent' class='row' style='display:none;padding-top:15px;'><div class='col'><ul><li>Venue:  <a href='" + data.venue.url + "' target='#'>" + data.venue.name + "</a></li><li>Town:  " + data.venue.town + "</li><li>Postcode:  " + data.venue.postcode + "</li></ul><p style='padding-left:25px;'>more info:<a href='" + data.url + "' target='#'>" + data.url + "</a></p></div><div class='col'><img style='height:100px;padding-top:15px;' src='" + data.venue.icon + "'/></div></div>");
+			$("#expandedContent").slideDown();
+			expanded = id;
+		}
+
+		</script>
+	</head>
+	<body>
+		<nav class="navbar navbar-expand-md bg-dark navbar-dark">
+			<a class="navbar-brand" href="#">Event Searcher <smaller>- 2017</smaller></a>
+			
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			
+			<div class="collapse navbar-collapse" id="collapsibleNavbar">
+				<ul class="navbar-nav">
+					<li class="nav-item">
+						<a class="nav-link" href="#">Home</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="/events2017/admin">Admin</a>
+					</li>
+				</ul>
+			</div>
+		</nav> 
+
+        <div class="container-fluid" style="margin-top:10px;color:cornflowerblue;">
+				<h4 style="margin-bottom: 0">home</h4>
+			</div>
+		<div class="container-fluid" style="margin-bottom: 10px;">
+			<form>
+				<div class="form-row">
+					<div class="col col-md-6">
+						<div class="input-group" style="margin-top:3px;">
+							<span class="input-group-addon">title</span>
+							<input class="form-control" id="searchBar" type="text" aria-label="title" placeholder="event search..." style="min-width:250px;"/>						
+						</div>
+					</div>
+					<div class="col col-md-4">
+						<div class="input-group" style="margin-top:3px;">
+							<span class="input-group-addon">date</span>
+							<input class="form-control" id="dateFilter" type="datetime" aria-label="date" placeholder="dd/mm/yyyy" style="min-width:150px;"/>
+						</div>
+					</div>
+					<div class="col col-md-2">
+						<button class="btn btn-primary" type="button" text="refresh" style="margin-top:3px;" onclick="getEvents()">search</button>
+					</div>
+				</div>
+			</form>		
+		</div>
+
+		<div id="events" class="list-group">
+			<!-- events list will be populated on page load -->
+		</div>
+	</body>
+</html>
