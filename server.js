@@ -6,7 +6,7 @@ var fs = require("fs");
 var mysql = require("mysql");
 var async = require("async");
 var ip = require("ip");
-var port = 8090;
+var port = 8080;
 var base = "/events2017"
 
 app.use(bodyParser.urlencoded({extended:false}));
